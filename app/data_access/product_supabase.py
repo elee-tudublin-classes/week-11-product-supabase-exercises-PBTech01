@@ -2,8 +2,6 @@
 from app.models.product import Product
 from starlette.config import Config
 from supabase import create_client, Client
-
-
 # Load environment variables from .env
 config = Config(".env")
 
@@ -11,17 +9,31 @@ db_url: str = config("SUPABASE_URL")
 db_key: str = config("SUPABASE_KEY")
 
 supabase: Client = create_client(db_url, db_key)
-
+#catname = supabase.from_("category").select("id, name").execute()
 
 # get all products
-def dataGetProducts():
-    response = (supabase.table("product")
-                .select("*")
-                .order("title", desc=False)
-                .execute()
-    )
+#def dataGetProducts():
+#    response = (supabase.table("product")
+#                .select("*")
+#                .order("title", desc=False)
+#                .execute()
+#    )
 
+#    return response.data
+def dataGetProducts(category_id=None):
+    query = (
+        supabase.table("product")
+        .select("id, title, description, stock, price, thumbnail, category:category_id(name)")
+        .order("title", desc=False)
+    )
+    
+    if category_id is not None:
+        query = query.eq("category_id", category_id)
+    
+    response = query.execute()
     return response.data
+
+
 
 # get product by id
 def dataGetProduct(id):
