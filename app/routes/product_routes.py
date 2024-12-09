@@ -1,4 +1,6 @@
 from typing import Annotated
+from typing import Optional
+from fastapi import Query
 from fastapi import APIRouter, Form, Request
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
@@ -16,10 +18,10 @@ templates = Jinja2Templates(directory="app/view_templates")
 
 # handle http get requests for the site root /
 # return the todos page
+# Example /product/?category_id=1
 @router.get("/", response_class=HTMLResponse)
-async def getProducts(request: Request):
-
-    products = getAllProducts()
+async def getProducts(request: Request, category_id: Optional[int] = Query(None)):
+    products = getAllProducts(category_id=category_id)
     categories = getAllCategories()
 
     # note passing of parameters to the page
